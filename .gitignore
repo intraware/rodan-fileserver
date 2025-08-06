@@ -26,4 +26,5 @@ target
 /target
 
 /data
-/static
+/static/*
+!/static/404.html

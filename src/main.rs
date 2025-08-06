@@ -1,7 +1,7 @@
 mod auth;
 mod handler;
 
-use actix_web::{middleware::{Logger, NormalizePath, TrailingSlash}, web, App, HttpServer};
+use actix_web::{dev::{fn_service, ServiceRequest, ServiceResponse}, middleware::{Logger, NormalizePath, TrailingSlash}, web, App, HttpServer};
 use actix_files::Files;
 
 use log::LevelFilter;
@@ -31,7 +31,12 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .service(Files::new("/static", "static").show_files_listing())
+            .service(Files::new("/static", "static").index_file("404.html").default_handler(fn_service(|req: ServiceRequest| async {
+                let (req, _) = req.into_parts();
+                let file = actix_files::NamedFile::open_async("./static/404.html").await?;
+                let res = file.into_response(&req);
+                Ok(ServiceResponse::new(req, res))
+            })))
             .service(handler::get_file)
             .service(handler::get_dir)
             .app_data(web::Data::new(secret.clone()))
