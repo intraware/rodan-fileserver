@@ -1,7 +1,8 @@
 mod auth;
 mod handler;
+mod middleware;
 
-use actix_web::{dev::{fn_service, ServiceRequest, ServiceResponse}, middleware::{Logger, NormalizePath, TrailingSlash}, web, App, HttpServer};
+use actix_web::{dev::{fn_service, ServiceRequest, ServiceResponse}, middleware::{from_fn, Logger, NormalizePath, TrailingSlash}, web, App, HttpServer};
 use actix_files::Files;
 
 use log::LevelFilter;
@@ -37,13 +38,17 @@ async fn main() -> std::io::Result<()> {
                 let res = file.into_response(&req);
                 Ok(ServiceResponse::new(req, res))
             })))
-            .service(handler::get_file)
-            .service(handler::get_dir)
+            .service(
+                web::scope("")
+                    .service(handler::get_file)
+                    .service(handler::get_dir)
+                    .wrap(from_fn(middleware::auth_middleware))
+            )
             .app_data(web::Data::new(secret.clone()))
             .app_data(web::PayloadConfig::new(MAX_FILE_SIZE))
             .wrap(Logger::new("%a %r %s %Dms"))
             .wrap(NormalizePath::new(TrailingSlash::Trim))
-    })
+        })
     .bind(("0.0.0.0", port))?
     .run()
     .await
