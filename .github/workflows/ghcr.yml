@@ -32,13 +32,13 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/myapp:latest
-            ghcr.io/${{ github.repository_owner }}/myapp:${{ env.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/rodan-fileserver:latest
+            ghcr.io/${{ github.repository_owner }}/rodan-fileserver:${{ env.VERSION }}
 
       - name: Save Docker image as tarball
         run: |
-          docker pull ghcr.io/${{ github.repository_owner }}/myapp:${{ env.VERSION }}
-          docker save ghcr.io/${{ github.repository_owner }}/myapp:${{ env.VERSION }} \
+          docker pull ghcr.io/${{ github.repository_owner }}/rodan-fileserver:${{ env.VERSION }}
+          docker save ghcr.io/${{ github.repository_owner }}/rodan-fileserver:${{ env.VERSION }} \
             -o myapp-${{ env.VERSION }}.tar
 
       - name: Upload image tarball to release
@@ -56,7 +56,7 @@ jobs:
             ### 🐳 Docker Image
             Available at:  
             ```
-            docker pull ghcr.io/${{ github.repository_owner }}/myapp:${{ env.VERSION }}
+            docker pull ghcr.io/${{ github.repository_owner }}/rodan-fileserver:${{ env.VERSION }}
             ```
             Or download the `.tar` from this release.
         env:
