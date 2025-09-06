@@ -45,12 +45,12 @@ jobs:
         run: |
           docker pull ghcr.io/${{ github.repository_owner }}/rodan-fileserver:${{ env.VERSION }}
           docker save ghcr.io/${{ github.repository_owner }}/rodan-fileserver:${{ env.VERSION }} \
-            -o myapp-${{ env.VERSION }}.tar
+            -o rodan-fileserver-${{ env.VERSION }}.tar
 
       - name: Upload image tarball to release
         uses: softprops/action-gh-release@v2
         with:
-          files: myapp-${{ env.VERSION }}.tar
+          files: rodan-fileserver-${{ env.VERSION }}.tar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
