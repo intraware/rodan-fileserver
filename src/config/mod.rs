@@ -1,0 +1,20 @@
+pub mod server;
+
+#[derive(Default, Debug, serde::Deserialize)]
+pub struct Config {
+    pub server: server::ServerConfig,
+}
+
+impl Config {
+    pub async fn from_file(file_path: &str) -> Result<Config, Box<dyn std::error::Error>> {
+        let contents = tokio::fs::read_to_string(file_path).await?;
+        let cfg: Config = toml::from_str(&contents)?;
+        cfg.validate()?;
+        Ok(cfg)
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        self.server.validate()?;
+        Ok(())
+    }
+}
